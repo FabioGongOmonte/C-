@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Setlist Generator - Results</title>
+  </head>
+  <body>
+    <h1>Setlist Generator - Results</h1>
+    <h2>All Setlists</h2>
+    <ul>
+      {% for setlist, consecutive_performances in setlists %}
+        <li>
+          <h3>Setlist:</h3>
+          <ul>
+            {% for song in setlist %}
+              <li>{{ song }}</li>
+            {% endfor %}
+          </ul>
+          <h3>Consecutive Performances:</h3>
+          <ul>
+            {% for performance in consecutive_performances %}
+              <li>{{ performance[1] }}: {{ performance[0] }}</li>
+            {% endfor %}
+          </ul>
+        </li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>

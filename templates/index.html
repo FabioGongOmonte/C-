@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Setlist Generator</title>
+  </head>
+  <body>
+    <h1>Setlist Generator</h1>
+
+    <h2>Add Song</h2>
+    <form method="POST">
+      <label for="song">Song:</label>
+      <input type="text" id="song" name="song" required>
+      <br>
+      <label for="dancers">Dancers:</label>
+      <input type="text" id="dancers" name="dancers" required>
+      <br>
+      <input type="submit" name="add_song" value="Add Song">
+      <input type="submit" name="generate_setlists" value="Generate Setlists" formnovalidate>
+    </form>
+
+    <h2>All Songs</h2>
+    <ul>
+      {% for song, dancers in performances.items() %}
+        <li>{{ song }}: {{ dancers }}</li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>

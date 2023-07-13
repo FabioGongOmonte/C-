@@ -1,0 +1,86 @@
+/* Default styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+  }
+  
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  h1 {
+    color: #333;
+  }
+  
+  h2 {
+    color: #555;
+  }
+  
+  form {
+    margin-bottom: 20px;
+  }
+  
+  input[type="text"],
+  input[type="submit"] {
+    padding: 10px;
+    font-size: 16px;
+  }
+  
+  input[type="submit"] {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    margin-bottom: 10px;
+  }
+  
+  .error-message {
+    color: #ff0000;
+  }
+  
+  .success-message {
+    color: #008000;
+  }
+  
+  /* Styles for smaller screens (up to 600px) */
+  @media (max-width: 600px) {
+    body {
+      font-size: 14px;
+    }
+  
+    .container {
+      padding: 10px;
+    }
+  
+    input[type="text"],
+    input[type="submit"] {
+      font-size: 14px;
+    }
+  }
+  
+  /* Styles for medium screens (601px - 900px) */
+  @media (min-width: 601px) and (max-width: 900px) {
+    body {
+      font-size: 16px;
+    }
+  }
+  
+  /* Styles for larger screens (above 900px) */
+  @media (min-width: 901px) {
+    body {
+      font-size: 18px;
+    }
+  }
+  

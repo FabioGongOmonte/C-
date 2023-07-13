@@ -1,28 +1,178 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Setlist Generator</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .form-container {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .form-heading {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .form-label {
+        font-weight: bold;
+      }
+
+      .form-input {
+        margin-bottom: 10px;
+      }
+
+      .form-error {
+        color: red;
+        margin-bottom: 10px;
+      }
+
+      .form-success {
+        color: green;
+        margin-bottom: 10px;
+      }
+
+      .song-list {
+        margin-top: 20px;
+      }
+
+      .song-item {
+        margin-bottom: 10px;
+      }
+
+      .nav-bar {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+
+      .nav-link {
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+        padding: 5px 10px;
+      }
+
+      .nav-link:hover {
+        background-color: #ddd;
+      }
+    </style>
+    <script>
+      function validateForm() {
+        var songInput = document.getElementById('song');
+        var dancersInput = document.getElementById('dancers');
+
+        if (songInput.value.trim() === '' && dancersInput.value.trim() === '') {
+          return true; // Allow form submission without validation
+        }
+
+        if (songInput.value.trim() === '') {
+          showError('Please enter a song.');
+          return false;
+        }
+
+        if (dancersInput.value.trim() === '') {
+          showError('Please enter at least one dancer.');
+          return false;
+        }
+
+        var dancerNames = dancersInput.value.split(',');
+        for (var i = 0; i < dancerNames.length; i++) {
+          if (dancerNames[i].trim() === '') {
+            showError('Please enter valid dancer names.');
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      function showError(errorMessage) {
+        var errorElement = document.getElementById('error');
+        errorElement.innerHTML = errorMessage;
+        errorElement.style.display = 'block';
+
+        setTimeout(function () {
+          errorElement.innerHTML = ''; // Clear the error message
+          errorElement.style.display = 'none'; // Hide the error message after 3 seconds
+        }, 3000);
+      }
+
+      function showSuccess(song) {
+        var successElement = document.getElementById('success');
+        successElement.innerHTML = song;
+        successElement.style.display = 'block';
+
+        setTimeout(function () {
+          successElement.innerHTML = ''; // Clear the success message
+          successElement.style.display = 'none'; // Hide the success message after 3 seconds
+        }, 3000);
+      }
+    </script>
   </head>
   <body>
-    <h1>Setlist Generator</h1>
+    <div class="container">
+      <div class="nav-bar">
+        {% if current_user.is_authenticated %}
+          <a href="/logout" class="nav-link">Logout</a>
+        {% else %}
+          <a href="/login" class="nav-link">Login</a>
+        {% endif %}
+      </div>
 
-    <h2>Add Song</h2>
-    <form method="POST">
-      <label for="song">Song:</label>
-      <input type="text" id="song" name="song" required>
-      <br>
-      <label for="dancers">Dancers:</label>
-      <input type="text" id="dancers" name="dancers" required>
-      <br>
-      <input type="submit" name="add_song" value="Add Song">
-      <input type="submit" name="generate_setlists" value="Generate Setlists" formnovalidate>
-    </form>
+      <h1>Setlist Generator</h1>
 
-    <h2>All Songs</h2>
-    <ul>
-      {% for song, dancers in performances.items() %}
-        <li>{{ song }}: {{ dancers }}</li>
-      {% endfor %}
-    </ul>
+      <div class="form-container">
+        <h2 class="form-heading">Add Song</h2>
+        <p>Enter the details for each song in the show:</p>
+        <form method="POST" onsubmit="return validateForm();">
+          <label for="song" class="form-label">Song:</label>
+          <input type="text" id="song" name="song" required class="form-input">
+          <br>
+          <label for="dancers" class="form-label">Dancers (comma-separated):</label>
+          <input
+            type="text"
+            id="dancers"
+            name="dancers"
+            pattern="[A-Za-z]+(,[A-Za-z]+)*"
+            title="Please enter a comma-separated list of names (e.g., A, B, C)"
+            class="form-input"
+          >
+          <br>
+          <input type="submit" name="add_song" value="Add Song">
+          <input type="submit" name="generate_setlists" value="Generate Setlists" formnovalidate>
+          <p id="error" class="form-error"></p>
+          {% if success %}
+          <p id="success" class="form-success"></p>
+          <script>
+            showSuccess('{{ success }}'); // Call the showSuccess function with the song name
+          </script>
+          {% endif %}
+        </form>
+      </div>
+
+      <h2>All Songs</h2>
+      <div class="song-list">
+        {% if performances %}
+        <ol>
+          {% for song, dancers in performances.items() %}
+          <li class="song-item"><strong>{{ song.title }}:</strong> {{ dancers|join(', ') }}</li>
+          {% endfor %}
+        </ol>
+        {% else %}
+        <p>No songs added yet.</p>
+        {% endif %}
+      </div>
+    </div>
   </body>
 </html>

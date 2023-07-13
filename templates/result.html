@@ -2,27 +2,69 @@
 <html>
   <head>
     <title>Setlist Generator - Results</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .result-container {
+        margin-top: 20px;
+      }
+
+      .setlist {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+
+      .setlist-title {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .consecutive-dancers {
+        color: #555;
+        margin-bottom: 5px;
+      }
+    </style>
   </head>
   <body>
-    <h1>Setlist Generator - Results</h1>
-    <h2>All Setlists</h2>
-    <ul>
-      {% for setlist, consecutive_performances in setlists %}
-        <li>
-          <h3>Setlist:</h3>
-          <ul>
-            {% for song in setlist %}
-              <li>{{ song }}</li>
-            {% endfor %}
-          </ul>
-          <h3>Consecutive Performances:</h3>
-          <ul>
-            {% for performance in consecutive_performances %}
-              <li>{{ performance[1] }}: {{ performance[0] }}</li>
-            {% endfor %}
-          </ul>
-        </li>
-      {% endfor %}
-    </ul>
+    <div class="container">
+      <h1>Setlist Generator</h1>
+
+      <h2>Results</h2>
+
+      <div class="result-container">
+        {% if setlists %}
+          {% for setlist, consecutive_performances in setlists %}
+            <div class="setlist">
+              <h3 class="setlist-title">Setlist</h3>
+              <ol>
+                {% for song in setlist %}
+                  <li>{{ song.title }}</li>
+                {% endfor %}
+              </ol>
+              <h4 class="consecutive-dancers">Consecutive Performances:</h4>
+              <ul>
+                {% if consecutive_performances %}
+                  {% for dancers, song in consecutive_performances %}
+                    <li>After {{ song.title }} - Dancers : {{ dancers|join(', ') }} </li>
+                  {% endfor %}
+                {% else %}
+                  <li>No consecutive performances.</li>
+                {% endif %}
+              </ul>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>No setlists found.</p>
+        {% endif %}
+      </div>
+    </div>
   </body>
 </html>

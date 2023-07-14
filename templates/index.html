@@ -151,13 +151,22 @@
           <br>
           <input type="submit" name="add_song" value="Add Song">
           <input type="submit" name="generate_setlists" value="Generate Setlists" formnovalidate>
-          <p id="error" class="form-error"></p>
-          {% if success %}
-          <p id="success" class="form-success"></p>
-          <script>
-            showSuccess('{{ success }}'); // Call the showSuccess function with the song name
-          </script>
-          {% endif %}
+          <p id="error" class="form-error">
+            {% if success %}
+            <p id="success" class="form-success"></p>
+            <script>
+              showSuccess('{{ success }}'); // Call the showSuccess function with the song name
+            </script>
+            {% endif %}
+          </p>
+          <p id="error" class="form-error">
+            {% if error %}
+              <script>
+                showError('{{ error }}');
+              </script>
+            {% endif %}
+          </p>
+
         </form>
       </div>
 
@@ -166,7 +175,7 @@
         {% if performances %}
         <ol>
           {% for song, dancers in performances.items() %}
-          <li class="song-item"><strong>{{ song.title }}:</strong> {{ dancers|join(', ') }}</li>
+          <li class="song-item"><strong>{{ song }}:</strong> {{ dancers|join(', ') }}</li>
           {% endfor %}
         </ol>
         {% else %}

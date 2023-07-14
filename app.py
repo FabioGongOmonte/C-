@@ -36,12 +36,18 @@ def home():
             dancers = request.form.get('dancers').split(',')
 
             if song_title and all(dancer.strip() for dancer in dancers):
-                song = Song(title=song_title, show_id=current_user.id)
+                # Check if the song title already exists for the show
+                existing_song = Song.query.filter_by(show_id=show_id, title=song_title).first()
+                if existing_song:
+                    error_message = f'A song with the title "{song_title}" already exists.'
+                    return render_template('index.html', songs=get_songs(show_id), performances=get_performances(show_id), error=error_message)
+
+                song = Song(title=song_title, show_id=show_id)
                 db.session.add(song)
                 db.session.flush()
 
                 for dancer in dancers:
-                    performance = Performance(song_id=song.id, dancer=dancer.strip())
+                    performance = Performance(song_title=song_title, dancer=dancer.strip())
                     db.session.add(performance)
 
                 db.session.commit()
@@ -70,8 +76,10 @@ def generate_setlists(songs, performances):
         setlists_with_consecutive_performances.append((setlist, consecutive_performances))
 
     sorted_result = sorted(setlists_with_consecutive_performances, key=lambda x: len(x[1]))
+    
+    top_10_setlists = sorted_result[:10]
 
-    return sorted_result
+    return top_10_setlists
 
 
 def find_consecutive(performances, setlist):
@@ -97,7 +105,7 @@ def get_performances(show_id):
     songs = get_songs(show_id)
 
     for song in songs:
-        performances[song.id] = [performance.dancer for performance in song.performances]
+        performances[song.title] = [performance.dancer for performance in song.performances]
 
     return performances
 

@@ -12,16 +12,15 @@ class Show(db.Model, UserMixin):
 
 
 class Song(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
+    title = db.Column(db.String(100), nullable=False, primary_key=True)
     show_id = db.Column(db.Integer, db.ForeignKey('show.id'), nullable=False)
 
     def __repr__(self):
-        return f"<Song {self.title}>"
+        return self.title
 
 class Performance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    song_id = db.Column(db.Integer, db.ForeignKey('song.id'), nullable=False)
+    song_title = db.Column(db.Integer, db.ForeignKey('song.title'), nullable=False)
     dancer = db.Column(db.String(100), nullable=False)
 
     song = db.relationship('Song', backref='performances', lazy=True)

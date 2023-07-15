@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, jsonify
+from sqlalchemy.exc import SQLAlchemyError
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from werkzeug.security import check_password_hash, generate_password_hash
 from models import db, Song, Performance, Show
@@ -22,16 +23,23 @@ with app.app_context():
     db.create_all()
 
 @app.route('/home', methods=['GET', 'POST'])
-@login_required
 def home():
+    if not current_user.is_authenticated:
+        return redirect('/')
     show_id = current_user.id
-    songs = get_songs(show_id)
-    performances = get_performances(show_id)
-
-    # Rest of the code
+    show_name = Show.query.get(int(show_id)).name
 
     if request.method == 'POST':
-        if 'add_song' in request.form:
+        if 'generate_setlists' in request.form:
+            songs = get_songs(show_id)
+            if songs:
+                performances = get_performances(show_id)
+                setlists_with_consecutive_performances = generate_setlists(songs, performances)
+                return render_template('result.html', setlists=setlists_with_consecutive_performances)
+            else:
+                return render_template('index.html', songs=get_songs(show_id), performances=get_performances(show_id), error='No songs added yet.', show = show_name)
+
+        elif 'add_song' in request.form:
             song_title = request.form.get('song')
             dancers = request.form.get('dancers').split(',')
 
@@ -40,7 +48,7 @@ def home():
                 existing_song = Song.query.filter_by(show_id=show_id, title=song_title).first()
                 if existing_song:
                     error_message = f'A song with the title "{song_title}" already exists.'
-                    return render_template('index.html', songs=get_songs(show_id), performances=get_performances(show_id), error=error_message)
+                    return render_template('index.html', songs=get_songs(show_id), performances=get_performances(show_id), error=error_message, show = show_name)
 
                 song = Song(title=song_title, show_id=show_id)
                 db.session.add(song)
@@ -51,19 +59,36 @@ def home():
                     db.session.add(performance)
 
                 db.session.commit()
+                return redirect(f'/home')  # Redirect to home 
 
-                success_message = f'Successfully added the song "{song.title}"'
-                return render_template('index.html', songs=get_songs(show_id), performances=get_performances(show_id), success=success_message)
-        elif 'generate_setlists' in request.form:
-            songs = get_songs(show_id)
-            if songs:
-                performances = get_performances(show_id)
-                setlists_with_consecutive_performances = generate_setlists(songs, performances)
-                return render_template('result.html', setlists=setlists_with_consecutive_performances)
-            else:
-                return render_template('index.html', songs=get_songs(show_id), performances=get_performances(show_id), error='No songs added yet.')
+    return render_template('index.html', songs=get_songs(show_id), performances=get_performances(show_id), show = show_name)
 
-    return render_template('index.html', songs=get_songs(show_id), performances=get_performances(show_id))
+
+@app.route('/delete-song/<song_title>', methods=['POST'])
+@login_required
+def delete_song(song_title):
+    show_id = current_user.id
+    song = Song.query.filter_by(title=song_title, show_id=show_id).first()
+
+    if song:
+        try:
+            # Delete performances associated with the song
+            performances = Performance.query.filter_by(song_title=song.title).all()
+            for performance in performances:
+                db.session.delete(performance)
+
+            # Delete the song
+            db.session.delete(song)
+            db.session.commit()
+            return redirect(f'/home') 
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            return redirect(f'/home')
+    else:
+        error_message = 'Song not found'
+        return redirect(f'/home')
+
+
 
 
 
@@ -75,24 +100,27 @@ def generate_setlists(songs, performances):
         consecutive_performances = find_consecutive(performances, setlist)
         setlists_with_consecutive_performances.append((setlist, consecutive_performances))
 
-    sorted_result = sorted(setlists_with_consecutive_performances, key=lambda x: len(x[1]))
-    
-    top_10_setlists = sorted_result[:10]
+    sorted_result = sorted(setlists_with_consecutive_performances, key=lambda x: (
+        len(x[1]), (sum(len(dancers) for dancers, _ in x[1])))
+    )
 
-    return top_10_setlists
+    top_20_setlists = sorted_result[:20]
+
+    return top_20_setlists
 
 
 def find_consecutive(performances, setlist):
     consecutive_performances = []
 
     for i in range(len(setlist) - 1):
-        set_1 = set(performances[setlist[i].id])
-        set_2 = set(performances[setlist[i + 1].id])
+        set_1 = set(performances[setlist[i].title])
+        set_2 = set(performances[setlist[i + 1].title])
 
         if set_1 & set_2:
             consecutive_performances.append((set_1 & set_2, setlist[i]))
 
     return consecutive_performances
+
 
 
 def get_songs(show_id):

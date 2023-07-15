@@ -3,66 +3,64 @@
   <head>
     <title>Setlist Generator - Results</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-    <style>
-      .container {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-
-      .result-container {
-        margin-top: 20px;
-      }
-
-      .setlist {
-        background-color: #f9f9f9;
-        border: 1px solid #ddd;
-        padding: 10px;
-        margin-bottom: 10px;
-      }
-
-      .setlist-title {
-        font-weight: bold;
-        color: #333;
-        margin-bottom: 5px;
-      }
-
-      .consecutive-dancers {
-        color: #555;
-        margin-bottom: 5px;
-      }
-    </style>
   </head>
   <body>
+    <header class="nav-bar">
+      <nav>
+        <ul class="nav-links">
+          <li><a class="nav-link" href="/logout">Logout</a></li>
+        </ul>
+      </nav>
+      <div class="nav-links">
+        <a class="nav-link" href="/home">Go Back</a>
+        <a href="https://github.com/FabioGongOmonte">
+          <img class="githubImage" alt="Github" src="{{ url_for('static', filename='github-logo.png') }}">
+        </a>
+      </div>
+    </header>
+
     <div class="container">
       <h1>Setlist Generator</h1>
 
-      <h2>Results</h2>
+      <h2>Results (Top 20 setlists) </h2>
 
       <div class="result-container">
         {% if setlists %}
           {% for setlist, consecutive_performances in setlists %}
-            <div class="setlist">
-              <h3 class="setlist-title">Setlist</h3>
-              <ol>
-                {% for song in setlist %}
-                  <li>{{ song.title }}</li>
-                {% endfor %}
-              </ol>
+            <div class="setlist-container">
+              <h3 class="setlist-title">Setlist {{ loop.index }}</h3>
+              <div class="setlist-songs">
+                <div class="column">
+                  <ol>
+                    {% for song in setlist[:setlist|length//2] %}
+                      <li>{{ song.title }}</li>
+                    {% endfor %}
+                  </ol>
+                </div>
+                <div class="column">
+                  <ol start="{{ setlist|length//2 + 1 }}">
+                    {% for song in setlist[setlist|length//2:] %}
+                      <li>{{ song.title }}</li>
+                    {% endfor %}
+                  </ol>
+                </div>
+              </div>
               <h4 class="consecutive-dancers">Consecutive Performances:</h4>
-              <ul>
+              <ul class="consecutive-dancers-list">
                 {% if consecutive_performances %}
                   {% for dancers, song in consecutive_performances %}
-                    <li>After {{ song.title }} - Dancers : {{ dancers|join(', ') }} </li>
+                    <li class="consecutive-dancer-item">
+                      After {{ song.title }} - Dancers: {{ dancers|join(', ') }}
+                    </li>
                   {% endfor %}
                 {% else %}
-                  <li>No consecutive performances.</li>
+                  <li class="no-setlists">No consecutive performances.</li>
                 {% endif %}
               </ul>
             </div>
           {% endfor %}
         {% else %}
-          <p>No setlists found.</p>
+          <p class="no-setlists">No setlists found.</p>
         {% endif %}
       </div>
     </div>

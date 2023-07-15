@@ -31,3 +31,8 @@ Using SetGen-Python is straightforward. Follow the steps below:
 7. You can log out at any time by clicking the "Logout" button in the navigation bar.
 
 Thank you for checking out SetGen-Python! We hope you find it helpful in generating optimized setlists for your shows.
+
+## The next step ?
+
+- Add an edit feature to be able to edit songs and dancers within the database.
+- Add an export feature that would allow users to export setlists into an Excel file.

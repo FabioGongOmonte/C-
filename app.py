@@ -8,7 +8,7 @@ import itertools
 
 def create_app():
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://setgen_user:MHTBLcG27UxVfgYooX409nhdLog9yqOb@dpg-cip2145gkuvrtob80nrg-a.ohio-postgres.render.com/setgen"
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
     app.config['SECRET_KEY'] = 'qwertyuiop'  # Replace with your own secret key
     db.init_app(app)
 

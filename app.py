@@ -6,8 +6,8 @@ from models import db, Song, Performance, Show
 import itertools
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///setlist.db'
-app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with your own secret key
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://setgen_user:MHTBLcG27UxVfgYooX409nhdLog9yqOb@dpg-cip2145gkuvrtob80nrg-a.ohio-postgres.render.com/setgen"
+app.config['SECRET_KEY'] = 'qwertyuiop'  # Replace with your own secret key
 db.init_app(app)
 
 # Initialize Flask-Login

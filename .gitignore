@@ -1,4 +1,4 @@
 .vscode
 venv
-requirements.txt
 instance
+__pycache__

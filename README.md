@@ -28,7 +28,7 @@ Using SetGen-Python is straightforward. Follow the steps below:
 - SQL: Database management system for storing and retrieving data.
 
 ## Demo
-To experience the functionality of SetGen-Python, you can visit the live demo by clicking here : (Youtube Video to follow). Feel free to explore and generate setlists for different shows!
+To experience the functionality of SetGen-Python, you can visit the live demo by clicking here : [https://youtu.be/MpTHXrgis6U]. Feel free to explore and generate setlists for different shows!
 
 Thank you for checking out SetGen-Python! We hope you find it helpful in generating optimized setlists for your shows.
 
